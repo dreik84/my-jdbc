@@ -22,11 +22,24 @@ public class Application {
             }
 
             sql = """
-                    INSERT INTO users (username, phone) VALUES ('tommy', '1234');
+                    INSERT INTO users (username, phone) VALUES (?, ?);
                     """;
 
-            try (var statement2 = connection.createStatement()) {
-                statement2.executeUpdate(sql);
+            try (var prepareStatement = connection.prepareStatement(sql)) {
+                prepareStatement.setString(1, "tomy");
+                prepareStatement.setString(2, "1234");
+                prepareStatement.executeUpdate();
+
+                prepareStatement.setString(1, "jimy");
+                prepareStatement.setString(2, "5678");
+                prepareStatement.executeUpdate();
+            }
+
+            sql = "DELETE FROM users WHERE phone = ?";
+
+            try (var prepareStatement = connection.prepareStatement(sql)) {
+                prepareStatement.setString(1, "5678");
+                prepareStatement.executeUpdate();
             }
 
             sql = "SELECT * FROM users";
@@ -36,9 +49,11 @@ public class Application {
 
                 while (resultSet.next()) {
                     System.out.println(resultSet.getString("username"));
-                    System.err.println(resultSet.getString("phone"));
+                    System.out.println(resultSet.getString("phone"));
                 }
             }
+
+            System.err.println(connection.getMetaData());
         }
     }
 }
