@@ -29,7 +29,14 @@ public class UserDao {
                 }
             }
         } else {
-            // TODO update
+            var sql = "UPDATE users SET username = ?, phone = ? WHERE id = ?";
+
+            try (var prepareStatement = connection.prepareStatement(sql)) {
+                prepareStatement.setString(1, user.getName());
+                prepareStatement.setString(2, user.getPhone());
+                prepareStatement.setLong(3, user.getId());
+                prepareStatement.executeUpdate();
+            }
         }
     }
 }
