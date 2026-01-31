@@ -4,15 +4,18 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class ConnectionManager {
+public final class ConnectionManager {
 
-    private final static String URL = "jdbc:postgresql://localhost:5432/flight_repo";
-    private final static String USER = "flight";
-    private final static String PASSWORD = "root";
+    private final static String URL_KEY = "db.url";
+    private final static String USER_KEY = "db.username";
+    private final static String PASSWORD_KEY = "db.password";
 
     public static Connection open() {
         try {
-            return DriverManager.getConnection(URL, USER, PASSWORD);
+            return DriverManager.getConnection(
+                    PropertiesUtil.get(URL_KEY),
+                    PropertiesUtil.get(USER_KEY),
+                    PropertiesUtil.get(PASSWORD_KEY));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
