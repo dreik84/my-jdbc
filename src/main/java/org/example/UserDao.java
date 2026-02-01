@@ -2,6 +2,7 @@ package org.example;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class UserDao {
     private Connection connection;
@@ -37,6 +38,25 @@ public class UserDao {
                 prepareStatement.setLong(3, user.getId());
                 prepareStatement.executeUpdate();
             }
+        }
+    }
+
+    public Optional<User> find(Long id) throws SQLException {
+        var sql = "SELECT * FROM users WHERE id = ?";
+
+        try (var stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            var resultSet = stmt.executeQuery();
+
+            if (resultSet.next()) {
+                var username = resultSet.getString("username");
+                var phone = resultSet.getString("phone");
+                var user = new User(username, phone);
+                user.setId(id);
+
+                return Optional.of(user);
+            }
+            return Optional.empty();
         }
     }
 }

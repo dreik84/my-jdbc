@@ -2,6 +2,7 @@ package org.example;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Objects;
 
 public class Application {
     public static void main(String[] args) throws SQLException {
@@ -20,6 +21,16 @@ public class Application {
             try (var statement = connection.createStatement()) {
                 statement.execute(sql);
             }
+
+            var dao = new UserDao(connection);
+            var user = new User("Maria", "8888");
+            System.out.println(user.getId()); // null
+
+            dao.save(user);
+            System.out.println(user.getId());
+
+            var user2 = dao.find(user.getId()).get();
+            System.out.println(Objects.equals(user2.getId(), user.getId()));
 
             sql = """
                     INSERT INTO users (username, phone) VALUES (?, ?);
