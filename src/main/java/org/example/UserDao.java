@@ -2,10 +2,11 @@ package org.example;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Optional;
 
 public class UserDao {
-    private Connection connection;
+    private final Connection connection;
 
     public UserDao(Connection conn) {
         connection = conn;
@@ -16,7 +17,7 @@ public class UserDao {
         if (user.getId() == null) {
             var sql = "INSERT INTO users (username, phone) VALUES (?, ?)";
 
-            try (var prepareStatement = connection.prepareStatement(sql)) {
+            try (var prepareStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 prepareStatement.setString(1, user.getName());
                 prepareStatement.setString(2, user.getPhone());
                 prepareStatement.executeUpdate();
