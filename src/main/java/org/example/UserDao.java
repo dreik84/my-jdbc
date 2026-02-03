@@ -60,4 +60,13 @@ public class UserDao {
             return Optional.empty();
         }
     }
+
+    public void delete(Long id) throws SQLException {
+        var sql = "DELETE FROM users WHERE id = ?";
+
+        try (var stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        }
+    }
 }

@@ -32,6 +32,8 @@ public class Application {
             var user2 = dao.find(user.getId()).get();
             System.out.println(Objects.equals(user2.getId(), user.getId()));
 
+            dao.delete(1L);
+
             sql = """
                     INSERT INTO users (username, phone) VALUES (?, ?);
                     """;
