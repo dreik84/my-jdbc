@@ -1,5 +1,6 @@
 package org.example;
 
+import com.github.javafaker.Country;
 import com.github.javafaker.Faker;
 import org.example.util.ConnectionManager;
 
@@ -11,24 +12,21 @@ public class JdbcRunner {
         Faker faker = Faker.instance();
 
         String sql = """
-                DROP TABLE IF EXISTS test;
-                
-                CREATE TABLE IF NOT EXISTS test (
-                  id SERIAL PRIMARY KEY,
-                  data VARCHAR(256)
-                );
-                
-                INSERT INTO test (data)
-                VALUES 
-                    ('TEXT %s'),
-                    ('TEXT %s'),
-                    ('TEXT %s'),
-                    ('TEXT %s')
-                """.formatted(faker.animal().name(), faker.artist().name(), faker.book().title(), faker.color().name());
+                INSERT INTO airport (code, country, city) VALUES (?, ?, ?);
+                """;
 
         try (Connection connection = ConnectionManager.open();
-             var statement = connection.createStatement()) {
-            System.out.println(statement.execute(sql));
+             var statement = connection.prepareStatement(sql)) {
+
+            for (int i = 1; i < 5; i++) {
+                Country country = faker.country();
+                long nextLong = faker.random().nextLong(1000);
+
+                statement.setLong(1, nextLong);
+                statement.setString(2, country.name());
+                statement.setString(3, country.capital());
+                statement.executeUpdate();
+            }
         }
     }
 }
