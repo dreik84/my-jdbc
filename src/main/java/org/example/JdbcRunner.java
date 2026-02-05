@@ -4,27 +4,30 @@ import com.github.javafaker.Faker;
 import org.example.util.ConnectionManager;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 public class JdbcRunner {
     public static void main(String[] args) throws SQLException {
         Faker faker = Faker.instance();
 
         String sql = """
-                INSERT INTO flight (aircraft_id, seat_no) VALUES (?, ?);
+                SELECT flight.flight_no
+                FROM flight 
+                WHERE arrival_date 
+                BETWEEN ? AND ?
                 """;
 
         try (Connection connection = ConnectionManager.open();
              var statement = connection.prepareStatement(sql)) {
 
-            for (int i = 1; i < 4; i++) {
-                statement.setLong(1, i);
-                for (int j = 1; j < 4; j++) {
-                    statement.setString(2, "C" + j);
-                    statement.executeUpdate();
-                }
-                ;
-            }
+            statement.setDate(1, Date.valueOf(LocalDate.now().minusDays(2)));
+            statement.setDate(2, Date.valueOf(LocalDate.now().plusDays(2)));
+            var resultSet = statement.executeQuery();
+
+            while (resultSet.next())
+                System.out.println(resultSet.getString("flight_no"));
         }
     }
 }
