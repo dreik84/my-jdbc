@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import org.example.util.ConnectionManager;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -21,6 +22,14 @@ public class JdbcRunner {
 
         try (Connection connection = ConnectionManager.open();
              var statement = connection.prepareStatement(sql)) {
+
+            statement.setFetchSize(2);
+            statement.setMaxRows(2);
+            statement.setQueryTimeout(1);
+
+            DatabaseMetaData metaData = connection.getMetaData();
+            System.out.println(metaData);
+
 
             statement.setDate(1, Date.valueOf(LocalDate.now().minusDays(2)));
             statement.setDate(2, Date.valueOf(LocalDate.now().plusDays(2)));
