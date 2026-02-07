@@ -20,7 +20,7 @@ public class JdbcRunner {
                 BETWEEN ? AND ?
                 """;
 
-        try (Connection connection = ConnectionManager.open();
+        try (Connection connection = ConnectionManager.get();
              var statement = connection.prepareStatement(sql)) {
 
             statement.setFetchSize(2);
@@ -31,7 +31,7 @@ public class JdbcRunner {
             System.out.println(metaData);
 
 
-            statement.setDate(1, Date.valueOf(LocalDate.now().minusDays(2)));
+            statement.setDate(1, Date.valueOf(LocalDate.now().minusDays(5)));
             statement.setDate(2, Date.valueOf(LocalDate.now().plusDays(2)));
             var resultSet = statement.executeQuery();
 
