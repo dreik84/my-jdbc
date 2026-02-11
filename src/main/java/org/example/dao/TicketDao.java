@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TicketDao {
     private final static TicketDao INSTANCE = new TicketDao();
@@ -30,6 +31,33 @@ public class TicketDao {
     private final static String FIND_BY_ID = FIND_ALL_SQL + """
             WHERE id = ?
             """;
+
+    private final static String UPDATE_SQL = """
+            UPDATE ticket
+            SET passport_no = ?,
+                passenger_name = ?,
+                flight_id = ?,
+                seat_no = ?,
+                cost = ?
+            WHERE id = ?
+            """;
+
+    public boolean update(Ticket ticket) {
+        try (var connection = ConnectionManager.get();
+             var statement = connection.prepareStatement(UPDATE_SQL)) {
+
+            statement.setString(1, ticket.getPassportNo());
+            statement.setString(2, ticket.getPassengerName());
+            statement.setLong(3, ticket.getFlightId());
+            statement.setInt(4, ticket.getSeatNo());
+            statement.setBigDecimal(5, ticket.getCost());
+            statement.setLong(6, ticket.getId());
+
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
 
     public Ticket save(Ticket ticket) {
         try (var connection = ConnectionManager.get();
@@ -53,7 +81,7 @@ public class TicketDao {
         }
     }
 
-    public Ticket findById(Long id) {
+    public Optional<Ticket> findById(Long id) {
         try (var connection = ConnectionManager.get();
              var statement = connection.prepareStatement(FIND_BY_ID)) {
 
@@ -66,7 +94,7 @@ public class TicketDao {
                 ticket = buildTicket(result);
             }
 
-            return ticket;
+            return Optional.ofNullable(ticket);
         } catch (SQLException e) {
             throw new DaoException(e);
         }
