@@ -1,5 +1,6 @@
 package org.example.dao;
 
+import org.example.dto.TicketFilter;
 import org.example.entity.Ticket;
 import org.example.exeption.DaoException;
 import org.example.util.ConnectionManager;
@@ -10,6 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class TicketDao {
     private final static TicketDao INSTANCE = new TicketDao();
@@ -95,6 +97,53 @@ public class TicketDao {
             }
 
             return Optional.ofNullable(ticket);
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    public List<Ticket> findAll(TicketFilter filter) {
+        List<Object> parameters = new ArrayList<>();
+        List<String> whereSql = new ArrayList<>();
+
+        if (filter.passengerName() != null) {
+            parameters.add("%" + filter.passengerName() + "%");
+            whereSql.add("passenger_name LIKE ?");
+        }
+
+        if (filter.seatNo() != 0) {
+            parameters.add(filter.seatNo());
+            whereSql.add("seat_no = ?");
+        }
+
+        parameters.add(filter.limit());
+        parameters.add(filter.offset());
+
+        var where = whereSql.stream().collect(Collectors.joining(
+                " AND ",
+                " WHERE ",
+                " LIMIT ? OFFSET ?"
+        ));
+
+        String sql = FIND_ALL_SQL + where;
+
+        try (var connection = ConnectionManager.get();
+             var statement = connection.prepareStatement(sql)) {
+
+            List<Ticket> tickets = new ArrayList<>();
+
+            for (int i = 0; i < parameters.size(); i++) {
+                statement.setObject(i + 1, parameters.get(i));
+            }
+
+//            System.out.println(statement);
+
+            var result = statement.executeQuery();
+
+            while (result.next())
+                tickets.add(buildTicket(result));
+
+            return tickets;
         } catch (SQLException e) {
             throw new DaoException(e);
         }
