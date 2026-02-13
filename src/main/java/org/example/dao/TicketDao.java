@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class TicketDao {
+public class TicketDao implements Dao<Long, Ticket> {
     private final static TicketDao INSTANCE = new TicketDao();
 
     private final static String SAVE_SQL = """
@@ -121,7 +121,7 @@ public class TicketDao {
 
         var where = whereSql.stream().collect(Collectors.joining(
                 " AND ",
-                " WHERE ",
+                parameters.size() > 2 ? " WHERE " : " ",
                 " LIMIT ? OFFSET ?"
         ));
 
