@@ -9,6 +9,6 @@ public class JdbcRunner {
     public static void main(String[] args) throws SQLException {
         TicketDao ticketDao = TicketDao.getInstance();
         FlightDao flightDao = FlightDao.getInstance();
-        System.out.println(flightDao.findAll());
+        System.out.println(ticketDao.findById(5L));
     }
 }

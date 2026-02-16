@@ -5,6 +5,7 @@ import org.example.entity.FlightStatus;
 import org.example.exeption.DaoException;
 import org.example.util.ConnectionManager;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,6 +19,10 @@ public class FlightDao implements Dao<Long, Flight> {
     private final static String FIND_ALL_SQL = """
             SELECT id, flight_no, departure_date, departure_airport_code, arrival_date, arrival_airport_code, aircraft_id, status
             FROM flight
+            """;
+
+    private final static String FIND_BY_ID_SQL = FIND_ALL_SQL + """
+            WHERE id = ?
             """;
 
     @Override
@@ -44,6 +49,15 @@ public class FlightDao implements Dao<Long, Flight> {
         }
     }
 
+    @Override
+    public Optional<Flight> findById(Long id) {
+        try (var connection = ConnectionManager.get()) {
+            return findById(id, connection);
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
     private Flight buildFlight(ResultSet result) throws SQLException {
         return new Flight(
                 result.getLong("id"),
@@ -57,9 +71,22 @@ public class FlightDao implements Dao<Long, Flight> {
         );
     }
 
-    @Override
-    public Optional<Flight> findById(Long id) {
-        return Optional.empty();
+    public Optional<Flight> findById(Long id, Connection connection) {
+        try (var statement = connection.prepareStatement(FIND_BY_ID_SQL)) {
+
+            statement.setLong(1, id);
+
+            var result = statement.executeQuery();
+            Flight flight = null;
+
+            if (result.next()) {
+                flight = buildFlight(result);
+            }
+
+            return Optional.ofNullable(flight);
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
     }
 
     @Override
