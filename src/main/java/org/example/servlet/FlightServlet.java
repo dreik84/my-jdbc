@@ -5,13 +5,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.service.FlightService;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 
-@WebServlet("/flight")
+@WebServlet("/flights")
 public class FlightServlet extends HttpServlet {
+    private final FlightService flightService = FlightService.getInstance();
 
     @Override
     public void init() throws ServletException {
@@ -23,17 +25,17 @@ public class FlightServlet extends HttpServlet {
         resp.setContentType("text/html");
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-        PrintWriter out = resp.getWriter();
-        out.println("<!DOCTYPE html>");
-        out.println("<html>");
-        out.println("<head>");
-        out.println("<title>Servlet FlightServlet</title>");
-        out.println("</head>");
-        out.println("<body>");
-        out.println("<h1>Servlet FlightServlet</h1>");
-        out.println("</body>");
-        out.println("</html>");
-
+        try (PrintWriter writer = resp.getWriter()) {
+            writer.write("<h1>Список перелётов<h1>");
+            writer.write("<ul>");
+            flightService.findAll().forEach(flightDto -> {
+                writer.write("""
+                        <li>
+                            <a href='/tickets?flightId=%d'>%s</a>
+                        </li>
+                        """.formatted(flightDto.id(), flightDto.description()));
+            });
+        }
     }
 
     @Override
