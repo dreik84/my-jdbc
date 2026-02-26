@@ -14,6 +14,12 @@
 <div>
     <span>CONTENT РУССКИЙ</span>
     <p>Size: ${requestScope.flights.size()}</p>
+    <p>Description: ${requestScope.flights.get(0).description()}</p>
+    <p>Id: ${requestScope.flights[0].id()}</p>
+    <p>JSESSIONID: ${cookie.get("JSESSIONID")}</p>
+    <p>Param id: ${param.id}</p>
+    <p>Header cookie: ${header["cookie"]}</p>
+    <p>Not empty: ${not empty flights}</p>
 </div>
 </body>
 </html>

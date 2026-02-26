@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.service.TicketService;
+import org.example.util.JspHelper;
 
 import java.io.IOException;
 
@@ -20,14 +21,8 @@ public class TicketServlet extends HttpServlet {
 
         Long flightId = Long.valueOf(req.getParameter("flightId"));
 
-        try (var writer = resp.getWriter()) {
-            writer.write("<h1>Купленные билеты</h1>");
-            writer.write("<ul>");
-            ticketService.findAllByFlightId(flightId).forEach(ticketDto -> {
-                writer.write("<li>" + ticketDto.seatNo() + "</li>");
-            });
-            writer.write("</ul>");
-        }
+        req.setAttribute("tickets", ticketService.findAllByFlightId(flightId));
+        req.getRequestDispatcher(JspHelper.getPath("tickets")).forward(req, resp);
 
     }
 }
