@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.dto.CreateUserDto;
 import org.example.util.JspHelper;
 
 import java.io.IOException;
@@ -22,6 +23,13 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.getWriter().write(req.getParameter("name"));
+        CreateUserDto userDto = CreateUserDto.builder()
+                .name(req.getParameter("name"))
+                .birthday(req.getParameter("birthday"))
+                .email(req.getParameter("email"))
+                .password(req.getParameter("password"))
+                .role(req.getParameter("role"))
+                .gender(req.getParameter("gender"))
+                .build();
     }
 }

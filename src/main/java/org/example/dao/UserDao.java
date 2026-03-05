@@ -2,11 +2,12 @@ package org.example.dao;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import org.example.entity.User;
+import org.example.exeption.DaoException;
 import org.example.util.ConnectionManager;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +21,6 @@ public class UserDao implements Dao<Long, User> {
             "INSERT INTO users(name, birthday, email, password, role, gender) VALUES (?, ?, ?, ?, ?, ?)";
 
     @Override
-    @SneakyThrows
     public User save(User user) {
         try (var connection = ConnectionManager.get();
              var statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
@@ -33,11 +33,12 @@ public class UserDao implements Dao<Long, User> {
             statement.setObject(6, user.getGender());
 
             statement.executeUpdate();
-
             ResultSet keys = statement.getGeneratedKeys();
 
             if (keys.next())
                 user.setId(keys.getObject("id", Long.class));
+        } catch (SQLException e) {
+            throw new DaoException(e);
         }
 
         return user;
