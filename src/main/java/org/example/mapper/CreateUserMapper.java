@@ -4,17 +4,28 @@ import org.example.dto.CreateUserDto;
 import org.example.entity.Gender;
 import org.example.entity.Role;
 import org.example.entity.User;
+import org.example.util.LocalDateFormatter;
 
 public class CreateUserMapper implements Mapper<User, CreateUserDto> {
+
+    private final static CreateUserMapper INSTANCE = new CreateUserMapper();
+
     @Override
-    public User from(CreateUserDto object) {
+    public User mapFrom(CreateUserDto object) {
         return User.builder()
                 .name(object.getName())
-//                .birthday(LocalDateFormatter.format(object.getBirthday()))
+                .birthday(LocalDateFormatter.format(object.getBirthday()))
                 .email(object.getEmail())
                 .password(object.getPassword())
                 .gender(Gender.valueOf(object.getGender()))
                 .role(Role.valueOf(object.getRole()))
                 .build();
+    }
+
+    public static CreateUserMapper getInstance() {
+        return INSTANCE;
+    }
+
+    private CreateUserMapper() {
     }
 }

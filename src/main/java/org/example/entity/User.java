@@ -1,12 +1,7 @@
 package org.example.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-
 import java.time.LocalDate;
 
-@AllArgsConstructor
-@Builder
 public class User {
     private Long id;
     private String name;
@@ -15,6 +10,20 @@ public class User {
     private String password;
     private Role role;
     private Gender gender;
+
+    public User(Long id, String name, LocalDate birthday, String email, String password, Role role, Gender gender) {
+        this.id = id;
+        this.name = name;
+        this.birthday = birthday;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.gender = gender;
+    }
+
+    public static UserBuilder builder() {
+        return new UserBuilder();
+    }
 
     public Long getId() {
         return this.id;
@@ -127,5 +136,61 @@ public class User {
 
     public String toString() {
         return "User(id=" + this.getId() + ", name=" + this.getName() + ", birthday=" + this.getBirthday() + ", email=" + this.getEmail() + ", password=" + this.getPassword() + ", role=" + this.getRole() + ", gender=" + this.getGender() + ")";
+    }
+
+    public static class UserBuilder {
+        private Long id;
+        private String name;
+        private LocalDate birthday;
+        private String email;
+        private String password;
+        private Role role;
+        private Gender gender;
+
+        UserBuilder() {
+        }
+
+        public UserBuilder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public UserBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public UserBuilder birthday(LocalDate birthday) {
+            this.birthday = birthday;
+            return this;
+        }
+
+        public UserBuilder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public UserBuilder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public UserBuilder role(Role role) {
+            this.role = role;
+            return this;
+        }
+
+        public UserBuilder gender(Gender gender) {
+            this.gender = gender;
+            return this;
+        }
+
+        public User build() {
+            return new User(this.id, this.name, this.birthday, this.email, this.password, this.role, this.gender);
+        }
+
+        public String toString() {
+            return "User.UserBuilder(id=" + this.id + ", name=" + this.name + ", birthday=" + this.birthday + ", email=" + this.email + ", password=" + this.password + ", role=" + this.role + ", gender=" + this.gender + ")";
+        }
     }
 }
