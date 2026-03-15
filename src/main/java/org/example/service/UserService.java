@@ -8,6 +8,7 @@ import org.example.dto.UserDto;
 import org.example.entity.User;
 import org.example.exeption.ValidationException;
 import org.example.mapper.CreateUserMapper;
+import org.example.mapper.UserMapper;
 import org.example.validator.CreateUserValidator;
 
 import java.util.Optional;
@@ -18,9 +19,10 @@ public class UserService {
     private final CreateUserMapper createUserMapper = CreateUserMapper.getInstance();
     private final UserDao userDao = UserDao.getInstance();
     private final CreateUserValidator createUserValidator = CreateUserValidator.getInstance();
+    private final UserMapper userMapper = UserMapper.getInstance();
 
     public Optional<UserDto> login(String email, String password) {
-        userDao.findByEmailAndPassword(email, password);
+        userDao.findByEmailAndPassword(email, password).map(userMapper::mapFrom);
 
         return Optional.empty();
     }

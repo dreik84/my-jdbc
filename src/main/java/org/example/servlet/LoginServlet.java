@@ -5,6 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
+import org.example.dto.UserDto;
 import org.example.service.UserService;
 import org.example.util.JspHelper;
 
@@ -21,6 +23,27 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        userService.login(req.getParameter("email"), req.getParameter("password"));
+        userService.login(req.getParameter("email"), req.getParameter("password"))
+                .ifPresentOrElse(
+                        userDto -> onLoginSuccess(userDto, req, resp),
+                        () -> onLoginFail(req, resp));
+    }
+
+    private void onLoginFail(HttpServletRequest req, HttpServletResponse resp) {
+        try {
+            resp.sendRedirect("/login?error&email=" + req.getParameter("email"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void onLoginSuccess(UserDto userDto, HttpServletRequest req, HttpServletResponse resp) {
+        req.getSession().setAttribute("user", userDto);
+
+        try {
+            resp.sendRedirect("/flight");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
