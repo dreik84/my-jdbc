@@ -62,8 +62,8 @@ public class UserDao implements Dao<Long, User> {
             statement.setObject(2, user.getBirthday());
             statement.setObject(3, user.getEmail());
             statement.setObject(4, user.getPassword());
-            statement.setObject(5, user.getRole());
-            statement.setObject(6, user.getGender());
+            statement.setString(5, user.getRole().toString());
+            statement.setString(6, user.getGender().toString());
 
             statement.executeUpdate();
             ResultSet keys = statement.getGeneratedKeys();
