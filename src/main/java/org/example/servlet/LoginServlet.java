@@ -5,7 +5,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.SneakyThrows;
 import org.example.dto.UserDto;
 import org.example.service.UserService;
 import org.example.util.JspHelper;
@@ -40,7 +39,7 @@ public class LoginServlet extends HttpServlet {
         req.getSession().setAttribute("user", userDto);
 
         try {
-            resp.sendRedirect("/flight");
+            resp.sendRedirect("/flights");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

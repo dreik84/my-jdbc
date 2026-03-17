@@ -22,9 +22,7 @@ public class UserService {
     private final UserMapper userMapper = UserMapper.getInstance();
 
     public Optional<UserDto> login(String email, String password) {
-        userDao.findByEmailAndPassword(email, password).map(userMapper::mapFrom);
-
-        return Optional.empty();
+        return userDao.findByEmailAndPassword(email, password).map(userMapper::mapFrom);
     }
 
     public Long create(CreateUserDto createUserDto) {
