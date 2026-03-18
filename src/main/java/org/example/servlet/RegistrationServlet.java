@@ -14,7 +14,9 @@ import org.example.util.JspHelper;
 
 import java.io.IOException;
 
-@WebServlet("/registration")
+import static org.example.util.UrlPath.REGISTRATION;
+
+@WebServlet(REGISTRATION)
 public class RegistrationServlet extends HttpServlet {
     private final UserService userService = UserService.getInstance();
 
